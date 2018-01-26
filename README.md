@@ -92,9 +92,9 @@ nano scripts/bcf2gl.sh
 # Convert bcf/vcf to gl format
 # (required for estpEM)
 
-BCF2GL='/data/$USER/fst_hmm/scripts/bcf2gl.pl'
+BCF2GL="/data/$USER/fst_hmm/scripts/bcf2gl.pl"
 
-INDIR='/data/$USER/fst_hmm'
+INDIR="/data/$USER/fst_hmm"
 
 # array of input files
 INPUT=('data/timemaHVA.vcf.gz' 'data/timemaHVC.vcf.gz')
@@ -169,7 +169,7 @@ nano scripts/alfreq.sh
 
 ESTPEM='estpEM'
 
-INDIR='/data/$USER/fst_hmm'
+INDIR="/data/$USER/fst_hmm"
 
 # array of input files
 INPUT=('timemaHVA.gl' 'timemaHVC.gl')
@@ -200,27 +200,134 @@ You can check the status of your jobs with ```Qstat```. Each job task should tak
 ```bash
 less -S timemaHVA.alfreq.log
 ```
-```bash
-node096
-Linux node096 2.6.32-573.3.1.el6.x86_64 #1 SMP Thu Aug 13 12:55:33 CDT 2015 x86_64 x86_64 x86_64
-GNU/Linux
-Sun Mar 20 00:26:59 GMT 2016
-----------------------------------------------------------
-Reading data from timemaHVA.gl
-Number of loci: 4391556
-Number of individuals: 20
-Using EM algorithm to estimate allele frequencies
-Writing results to timemaHVA.alfreq.txt
-Runtime: 0 hr 2 min 11 sec
-----------------------------------------------------------
-Sun Mar 20 00:29:10 GMT 2016
-```
+It should look like this:
+>node211<br>
+>Linux node211 2.6.32-696.18.7.el6.x86_64 #1 SMP Wed Jan 3 19:31:16 CST 2018 x86_64 GNU/Linux<br>
+>Fri Jan 26 18:36:16 GMT 2018<br>
+>----------------------------------------------------------<br>
+><br>
+>Reading data from timemaHVA.gl<br>
+>Number of loci: 4391556<br>
+>Number of individuals: 20<br>
+>Using EM algorithm to estimate allele frequencies<br>
+>Writing results to timemaHVA.alfreq.txt<br>
+>Runtime: 0 hr 1 min 11 sec<br>
+><br>
+>----------------------------------------------------------<br>
+>Fri Jan 26 18:37:28 GMT 2018<br>
+
 And to the output text files:
 ```bash
 less -S timemaHVA.alfreq.txt
 ```
+That should look like this:
 >lg01_ord0000_scaf00353:8612 0.2074 0.0006<br>
 >lg01_ord0000_scaf00353:8752 0.1963 0.0674<br>
 >lg01_ord0000_scaf00353:8758 0.1250 0.0001<br>
 >lg01_ord0000_scaf00353:8770 0.1199 0.0001<br>
 >lg01_ord0000_scaf00353:8772 0.1791 0.0408<br>
+
+The columns are: locus, allele frequency from counts, and allele frequency inferred by maximum likelihood. Now where going to merge the results from both populations into a single file:
+
+```bash
+# create header
+echo -e "locus\tafHVA\tafHVC" > timemaHVAxHVC.alfreq.txt
+
+# join files by locus (1st field), retain only locus id (1st field) and ML AFs (3rd and 5th fields)
+$ join -j 1 timemaHVA.alfreq.txt timemaHVC.alfreq.txt | \
+awk '{OFS="\t"; print $1,$3,$5}' >> timemaHVAxHVC.alfreq.txt
+
+# show file
+less -S timemaHVAxHVC.alfreq.txt
+```
+>locus afHVA afHVC<br>
+>lg01_ord0000_scaf00353:8612 0.0006 0.0005<br>
+>lg01_ord0000_scaf00353:8752 0.0674 0.1185<br>
+>lg01_ord0000_scaf00353:8758 0.0001 0.0201<br>
+>lg01_ord0000_scaf00353:8770 0.0001 0.0000<br>
+>lg01_ord0000_scaf00353:8772 0.0408 0.0263<br>
+
+## Estimating F<sub>ST</sub>
+We are going to calculate genetic differentiation between two populations and for a large
+number of variants using F<sub>ST</sub>. We are going to use the F<sub>ST</sub> Hudson's estimator for every SNP:
+
+where *Hw* is the within-population heterozygosity, *Hb* is the between-population heterozygosity, and *p<sub>1</sub>* and *p<sub>2</sub>* are the allele frequencies in each population.
+
+Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Let's open an R session simply with the command ```R```:
+```bash
+R
+```
+
+For F<sub>ST</sub>, we are going to use the code provided in the script ```fst.R```. Let's have a look:
+
+```R
+setwd("/data/$USER/fst_hmm")
+
+# library to speed up loading of big tables
+library(data.table)
+
+# function to calculate Hudson's Fst
+# --------------------------------------------------
+hudsonFst<-function(locus=NA, p1=NA, p2=NA){
+    numerator<-p1 * (1 - p1) + p2 * (1 - p2) 
+    denominator<-p1 * (1 - p2) + p2 * (1 - p1) 
+    fst<-1 - numerator/denominator
+    out<-data.frame(locus,numerator,denominator,fst)
+    return(out)
+}
+# --------------------------------------------------
+
+# load file with allele frequencies
+pops.af<-fread("timemaHVAxHVC.alfreq.txt", header=T, sep="\t")
+
+# Calculate Fst
+fst.HVAxHVC<-hudsonFst(locus=pops.af$locus, p1=pops.af$afHVA,p2=pops.af$afHVC)
+
+# Write table to file
+write.table(fst.HVAxHVC, file="timemaHVAxHVC.fst.dsv", 
+                quote=F, row.names=F, sep="\t")
+
+# plot FST histogram
+hist(fst.HVAxHVC$fst, breaks=50)
+
+# Genome-wide FST statistics
+# ------------------------------------------------------------------------------
+# It is better to calculate mean FST using numerator and denominator
+nloci<-length(na.exclude(fst.HVAxHVC$fst))
+fst.mean<-1-((sum(fst.HVAxHVC$numerator)/nloci)/(sum(fst.HVAxHVC$denominator)/nloci))
+fst.mean
+mean(fst.HVAxHVC$fst,na.rm=T)
+
+# min, max, quantiles
+min(fst.HVAxHVC$fst,na.rm=T)
+max(fst.HVAxHVC$fst,na.rm=T)
+fst.quantile<-quantile(fst.HVAxHVC$fst, prob=c(0.5,0.025,0.975), na.rm=T)
+fst.quantile
+
+fst.genome<-c("genome",nloci, fst.mean,fst.quantile)
+# ------------------------------------------------------------------------------
+
+# FST stats by linkage group
+# ------------------------------------------------------------------------------
+lgs<-unique(gsub("_ord.*","", fst.HVAxHVC$locus))
+fst.stats.lgs<-lapply(lgs, function(lg){
+              fst<-fst.HVAxHVC[grep(paste("^",lg,"_",sep=""), fst.HVAxHVC$locus),]
+              nloci<-length(na.exclude(fst$fst))
+              fst.mean<-1-((sum(fst$numerator)/nloci)/(sum(fst$denominator)/nloci))
+              fst.quantile<-quantile(fst$fst, prob=c(0.5,0.025,0.975), names=F, na.rm=T)
+              return(c(nloci=nloci,
+                       mean=fst.mean,median=fst.quantile[1],
+                       lo95=fst.quantile[2],hi95=fst.quantile[3]))
+            })
+fst.stats.lgs<-data.frame(lg=lgs,do.call("rbind",fst.stats.lgs),stringsAsFactors=F)
+
+# Add genome
+fst.stats<-rbind(fst.genome,fst.stats.lgs)
+# ------------------------------------------------------------------------------
+
+# Write summary table to file
+# ------------------------------------------------------------------------------
+write.table(fst.stats,file="timemaHVAxHVC.lgs.fst.dsv",
+            quote=F, row.names=F, sep="\t")
+# ------------------------------------------------------------------------------
+```
