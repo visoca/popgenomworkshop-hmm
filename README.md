@@ -253,19 +253,21 @@ number of variants using F<sub>ST</sub>. We are going to use the F<sub>ST</sub> 
 
 where *Hw* is the within-population heterozygosity, *Hb* is the between-population heterozygosity, and *p<sub>1</sub>* and *p<sub>2</sub>* are the allele frequencies in each population.
 
-Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Let's open an R session simply with the command ```R```:
-```bash
-R
-```
+Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```. 
 
-For F<sub>ST</sub>, we are going to use the code provided in the script ```fst.R```. Let's have a look:
+For F<sub>ST</sub> estimating we are going to use the code provided in the script ```fst.R```. We will go here step by step (remember this has be run within ```R```).
 
+First we are going to change the working directory:
 ```R
 setwd("/data/$USER/fst_hmm")
-
+```
+and then we are going to load a library that will greatly speed up the loading of bit files:
+```R
 # library to speed up loading of big tables
 library(data.table)
-
+```
+This is the function to calculate Hudson's F<sub>ST</sub>:
+```R
 # function to calculate Hudson's Fst
 # --------------------------------------------------
 hudsonFst<-function(locus=NA, p1=NA, p2=NA){
@@ -276,10 +278,14 @@ hudsonFst<-function(locus=NA, p1=NA, p2=NA){
     return(out)
 }
 # --------------------------------------------------
-
+```
+Then we load allele frequencies:
+```R
 # load file with allele frequencies
 pops.af<-fread("timemaHVAxHVC.alfreq.txt", header=T, sep="\t")
-
+```
+and calculate the F<sub>ST</sub>s:
+```R
 # Calculate Fst
 fst.HVAxHVC<-hudsonFst(locus=pops.af$locus, p1=pops.af$afHVA,p2=pops.af$afHVC)
 
