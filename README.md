@@ -4,7 +4,7 @@
 #### Victor Soria-Carrasco
 The aim of this practical is to estimate differentiation (FST) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach.
 
-## Initial set up
+## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
 
 Connect to Iceberg HPC cluster (change user by your username, e.g. cs4ab33):
@@ -55,7 +55,7 @@ Change to the working directory we are going to use for this practical:
 cd fst_hmm
 ```
 
-## Data formatting
+## 2. Data formatting
 Now let's have a look at the data.
 You should have the following input files:
 ```bash
@@ -147,7 +147,7 @@ less -S timemaHVA.gl
 
 The first line shows the number of samples and the number of SNPs, the second line show the samples ids, and the third line specifices what samples will be used for analyses. The lines below represent a SNP per line. The first field is the id (scaffold:position in this case) and it is followed by the phred scaled genotype likelihoods for the three possible genotypes (all variants are biallelic) for each individual. Therefore there are 3 x number of samples fields genotype likelihoods on each line.
 
-## Estimating allele frequencies
+## 3. Allele frequency estimation
 We will infer allele frequencies from genotype likelihoods by maximum likelihood, using an implementation of the iterative soft expectation-maximization algorithm (EM) described in [Li 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3198575/) and also used in bcftools. This algorithm has been implemented in the program ```estpEM```, withcode kindly provided by [Zach Gompert, Utah State University](https://gompertlab.wordpress.com/)). As before, we are going to use and SGE array job to parallelize jobs. In this case it will run ```estpEM``` to estimate allele frequencies from genotype likelihoods. You can have a look at the script:
 
 ```bash
@@ -247,7 +247,7 @@ less -S timemaHVAxHVC.alfreq.txt
 >lg01_ord0000_scaf00353:8770 0.0001 0.0000<br>
 >lg01_ord0000_scaf00353:8772 0.0408 0.0263<br>
 
-## Estimating F<sub>ST</sub>
+## 4. F<sub>ST</sub> estimation
 We are going to calculate genetic differentiation between two populations and for a large
 number of variants using F<sub>ST</sub>. We are going to use the F<sub>ST</sub> Hudson's estimator for every SNP:
 
@@ -337,3 +337,6 @@ write.table(fst.stats,file="timemaHVAxHVC.lgs.fst.dsv",
             quote=F, row.names=F, sep="\t")
 # ------------------------------------------------------------------------------
 ```
+
+## 4. Delimitation of contiguous regions of differentiation using a HMM model
+We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation. We will classify the genom in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation.
