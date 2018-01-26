@@ -43,11 +43,18 @@ cd fst_hmm
 Now let's have a look at the data.
 You should have the following input files:
 ```bash
-ls data
-  total 2.5G
-  -rw-r--r-- 1 cs4ab33 cs  22K Jan 26 12:31 lg_ord_sca_length.dsv
-  -rw-r--r-- 1 cs4ab33 cs 768M Jan 26 12:31 timemaHVA.gl
-  -rw-r--r-- 1 cs4ab33 cs 467M Jan 26 12:31 timemaHVA.vcf.gz
-  -rw-r--r-- 1 cs4ab33 cs 781M Jan 26 12:31 timemaHVC.gl
-  -rw-r--r-- 1 cs4ab33 cs 476M Jan 26 12:31 timemaHVC.vcf.gz
+ls -lh data
+
 ```
+```html
+   <body style="background-color:powderblue;">
+  sdfasdf
+```
+>total 2.5G<br>
+>-rw-r--r-- 1 cs4ab33 cs  22K Jan 26 12:31 lg_ord_sca_length.dsv<br>
+>-rw-r--r-- 1 cs4ab33 cs 768M Jan 26 12:31 timemaHVA.gl<br>
+>-rw-r--r-- 1 cs4ab33 cs 467M Jan 26 12:31 timemaHVA.vcf.gz<br>
+>-rw-r--r-- 1 cs4ab33 cs 781M Jan 26 12:31 timemaHVC.gl<br>
+>-rw-r--r-- 1 cs4ab33 cs 476M Jan 26 12:31 timemaHVC.vcf.gz<br>
+
+There is a vcf file for each population that has to be converted to the stripped down format (“gl”, genotype likelihood) required for the program we are going to use for allele frequency estimation
