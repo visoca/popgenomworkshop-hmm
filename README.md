@@ -59,9 +59,9 @@ There is a vcf file for each population (HVA and HVC). You can have a look at th
 gzip -dc timemaHVA.vcf.gz | less -S
 # or
 samtools view timemaHVA.vcf.gz | less -S
-``
+```
 
 They need to be converted to the stripped down format (“gl”, genotype likelihood) required for the program we are going to use for allele frequency estimation. This is done with a script called *bcf2gl.sh*. Let's have a look with the text editor nano:
 ```bash
 nano scripts/bcf2gl.sh
-``
+```
