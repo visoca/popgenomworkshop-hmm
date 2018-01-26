@@ -1,8 +1,10 @@
 *Population Genomics Workshop 2018, University of Sheffield*
 
-# Identification of regions of differentiation using Hidden Markov Models (HMM)
+# Delimitation of contiguous regions of differentiation using Hidden Markov Models (HMM)
+
 #### Victor Soria-Carrasco
-The aim of this practical is to estimate differentiation (FST) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach.
+
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach.
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
