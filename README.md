@@ -259,15 +259,15 @@ where *Hw* is the within-population heterozygosity, *Hb* is the between-populati
 
 Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```.
 
-For F<sub>ST</sub> estimating we are going to use the code provided in the script ```fst.R```. We will go here step by step (remember this has be run within ```R```).
+We are going to use the code provided in the script ```fst.R``` for F<sub>ST</sub> estimation. We will go here step by step (remember this has be run within ```R```).
 
-First we are going to change the working directory:
+First we change the working directory:
 ```R
 user<-Sys.getenv("USER")
 wkpath<-paste("/data/",user, "/fst_hmm",sep="")
 setwd(wkpath)
 ```
-and then we are going to load a library that will greatly speed up the loading of bit files:
+And then we load a library that will greatly speed up the loading of bit files:
 ```R
 # load library to speed up loading of big tables
 library(data.table)
@@ -294,7 +294,7 @@ head(pops.af)
 ```
 and now calculate the F<sub>ST</sub>s for every SNP:
 ```R
-# Calculate Fst
+# Calculate Fst for all loci
 fst.HVAxHVC<-hudsonFst(locus=pops.af$locus, p1=pops.af$afHVA,p2=pops.af$afHVC)
 # check results
 head(fst.HVAxHVC)
@@ -305,10 +305,12 @@ Write results to file:
 write.table(fst.HVAxHVC, file="timemaHVAxHVC.fst.dsv", 
                 quote=F, row.names=F, sep="\t")
 ```
-If you are working in a graphical session, you can plot the F<sub>ST</sub> histogram:
+And plot the F<sub>ST</sub> histogram to a png file (you can download this image to your own computer for visualisation):
 ```R
-# plot FST histogram
-hist(fst.HVAxHVC$fst, breaks=50)
+# plot FST histogram to png file
+png(filename="timemaHVAxHVC.fst.png", width=1600, height=1200)
+hist(fst.HVAxHVC$fst, breaks=100)
+dev.off()
 ```
 Now genome-wide F<sub>ST</sub> statistics are calculated as "ratio of averages" (i.e. averaging the variance components - numerator and denominator - separately), as suggested in [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full)
 ```R
@@ -319,21 +321,23 @@ nloci<-length(na.exclude(fst.HVAxHVC$fst))
 fst.mean<-1-((sum(fst.HVAxHVC$numerator)/nloci)/(sum(fst.HVAxHVC$denominator)/nloci))
 fst.mean
 ```
-
 You can see "average of ratios" (i.e. mean of F<sub>ST</sub>s) produces a noticeable different (underestimated) value:
 ```R
 # "average of ratios" yields a noticeable lower value
 mean(fst.HVAxHVC$fst,na.rm=T)
 ```
-Calculate median and upper quantiles (95%,97.5%,99%):
+Calculate median, upper quantiles (95%, 99%, 99.9%, 99.99%), and max:
 ```R
-# min, max, quantiles
-min(fst.HVAxHVC$fst,na.rm=T)
-max(fst.HVAxHVC$fst,na.rm=T)
-fst.quantile<-quantile(fst.HVAxHVC$fst, prob=c(0.5,0.95,0.975,0.99), na.rm=T)
+# median and upper quantiles for all loci
+fst.quantile<-quantile(fst.HVAxHVC$fst, prob=c(0.5,0.95,0.99,0.999,0.9999), na.rm=T)
 fst.quantile
 
-fst.genome<-c("genome",nloci,fst.mean,fst.quantile)
+# max
+fst.max<-max(fst.HVAxHVC$fst,na.rm=T)
+fst.max
+
+# put all together in a vector
+fst.genome<-c("genome",nloci,fst.mean,fst.quantile,fst.max)
 # ------------------------------------------------------------------------------
 ```
 Calculate F<sub>ST</sub> separately for each major linkage group (~chromosomes):
@@ -348,8 +352,9 @@ fst.lg<-function(lg){
               fst<-fst.HVAxHVC[grep(paste("^",lg,"_",sep=""), fst.HVAxHVC$locus),]
               nloci<-length(na.exclude(fst$fst))
               fst.mean<-1-((sum(fst$numerator)/nloci)/(sum(fst$denominator)/nloci))
-              fst.quantile<-quantile(fst$fst, prob=c(0.5,0.95,0.975,0.99), names=F, na.rm=T)
-              return(c(nloci=nloci,mean=fst.mean,fst.quantile))
+              fst.quantile<-quantile(fst$fst, prob=c(0.5,0.95,0.99,0.999,0.9999), names=F, na.rm=T)
+              fst.max<-max(fst$fst, na.rm=T)
+              return(c(nloci=nloci,mean=fst.mean,fst.quantile,fst.max))
             }
 
 # calculate fst for each linkage group
@@ -357,15 +362,17 @@ fst.stats.lgs<-lapply(lgs, fst.lg)
 
 # put them together in a data frame
 fst.stats.lgs<-data.frame(lg=lgs,do.call("rbind",fst.stats.lgs),stringsAsFactors=F)
-
-# put names of columns
-colnames(fst.stats.lgs)<-c("lg","nloci","mean","median","q95%","q97.5%","q99%")
 # ------------------------------------------------------------------------------
 ```
 Put together F<sub>ST</sub> estimates for whole genome and linkage groups and write to a text file:
 ```R
+# summarize results
+# ------------------------------------------------------------------------------
 # put together whole genome and lgs estimates
 fst.stats<-rbind(fst.genome,fst.stats.lgs)
+
+# put names of columns
+colnames(fst.stats)<-c("lg","nloci","mean","median","q95%","q99%","q99.9%","q99.99%","max")
 
 # and check
 fst.stats
@@ -373,7 +380,209 @@ fst.stats
 # Write summary table to file
 write.table(fst.stats,file="timemaHVAxHVC.lgs.fst.dsv",
             quote=F, row.names=F, sep="\t")
+# ------------------------------------------------------------------------------
 ```
 
 ## 4. Delimitation of contiguous regions of differentiation using a HMM model
-We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation. We will classify the genom in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation.
+We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation, following the approach of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107). We will use the package [```HiddenMarkov```](https://cran.r-project.org/web/packages/HiddenMarkov/index.html) to classify the genome in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation across the genome (and potentially under selection). We are going to use the code provided in the script ```fitHMM.R``` for that.
+
+First we change the working directory:
+```R
+user<-Sys.getenv("USER")
+wkpath<-paste("/data/",user, "/fst_hmm",sep="")
+setwd(wkpath)
+```
+And then we load the package ```HiddenMarkov``` to fit HMMs and ```data.table``` to speed up loading big files:
+```R
+# library to fit Hidden Markov Models
+library(HiddenMarkov)
+
+# library to speed up loading of big tables
+library(data.table)
+```
+
+We modify the function Mstep.norm that will be used for fitting HMMs later (this produces better results):
+```R
+# Modified version of Mstep.norm for fitting HMM below
+# ------------------------------------------------------------------------
+# here the standard deviation is fixed to the values specified in pm$sd 
+Mstep.normc <- function(x, cond, pm, pn){
+  nms <- sort(names(pm))
+  n <- length(x)
+  m <- ncol(cond$u)
+  if (all(nms==c("mean", "sd"))){
+    mean <- as.numeric(matrix(x, nrow = 1) %*% cond$u)/apply(cond$u, 
+       MARGIN = 2, FUN = sum)
+    sd <- pm$sd
+    return(list(mean=mean, sd=sd))
+  }
+}
+rnormc <- rnorm
+dnormc <- dnorm
+pnormc <- pnorm
+qnormc <- qnorm
+```
+Now we load the data:
+```R
+# Prepare data
+# ------------------------------------------------------------------------
+# Load Fst if need be
+fst.HVAxHVC<-fread("timemaHVAxHVC.fst.dsv", header=T, sep="\t")
+```
+and restrict the analyses to a single linkage group:
+```R
+# Use only one linkage group
+fst<-fst.HVAxHVC[grep("^lg01_", fst.HVAxHVC$locus),]$fst
+#fst<-fst.HVAxHVC[grep("^lg08_", fst.HVAxHVC$locus),]$fst
+```
+F<sub>ST</sub> is transformed using a logit function so that we can assume a normal distribution of F<sub>ST</sub> for each HMM state. Missing and very low F<sub>ST</sub> values that may result in "NA" or "Inf" values after transformation are replaced by low, but tractable F<sub>ST</sub> values (i.e. 1e-9) beforehand. We also store the number of SNPs, the mean and the standard deviation of logit F<sub>ST</sub>s, as these values will be used later.
+```R
+# Replace mising and too low Fst values by tractable value
+fst[is.na(fst)]<-1e-9
+fst[fst<1e-9]<-1e-9
+
+# logit transform Fst, we will assume a normal logit distribution 
+# for each HMM state
+lfst<-log(fst/(1-fst))
+
+# nloci, mean and sd (used below)
+nloci<-length(lfst)
+mean.lfst<-mean(lfst)
+sd.lfst<-sd(lfst)
+# ------------------------------------------------------------------------
+```
+We now will fit a homogenous Hidden Markov Model of 3 discrete states: high (1), medium (2), and low (3) differentiation. We will use a reasonable starting transition matrix: low transition rates to and from medium state, but disallowing direct transitions between extremes (from low to high or high to low). It is highly recommended to run the algorithm multiple times (tens, hundreds, or even thousands) using different starting matrices, because the maximum-likelihood searching algorithm could be stuck in local optima. We will not do this in this practical for time reasons, but code to generate random matrices is included.
+```R
+# Fit homogenous HMM of 3 discrete states
+# ------------------------------------------------------------------------
+# initial m x m transition probability matrix
+# disable transitions from 1 to 3 and 3 to 1 (set value to zero) 
+# (direct transitions from low to high and high to low differentiation)
+Pi<-matrix(c(0.9,0.1,0,
+             0.05,0.9,0.05,
+             0,0.1,0.9),nrow=3,byrow=T)
+Pi
+# it is strongly recommended to run the EM algorithm multiple times (hundreds
+# or thousands) with different starting matrices to avoid maximum-likelihood
+# local optima; e.g. code to produce 100 random matrices:
+# random.matrix<-function(x){
+#                   x<-runif(3)
+#                   matrix(c(x[1],1-x[1],0,
+#                            x[2]/2,1-x[2],x[2]/2,
+#                            0,x[3],1-x[3]),nrow=3,byrow=T)}
+# matrices<-lapply(1:100, random.matrix)
+```
+We also set an initial marginal probability distribution for the m hidden states (delta) and a list with the initial values for the distribution of observed process (i.e. logit F<sub>ST</sub>; pm). In this case the distribution is a normal with the standard deviation fixed to the standard deviation estimated genome-wide and reasonable starting values for the means around the genome-wide mean.
+```R
+# initial marginal probability distribution of the m hidden states
+delta<-c(0,1,0)
+
+# initial list of parameter values associated with the distribution 
+# of observed process
+# they must coincide with the parameters of the function use
+# we are using a normal and must give 3 means and 3 sds
+pm<-list(mean=c(mean.lfst*0.9,mean.lfst,mean.lfst*1.1),
+         sd=rep(sd.lfst,3))
+```
+
+We finally set a discrete time HMM object with the initial values of the transition probability matrix (Pi), the marginal probabily distribution of the hidden states (delta) at the start, using a modified normal distribution (normc) with variance fixed to the initial genome-wide variance estimate, and a list of initial observed process values (pm). 
+```R
+# set discrete time HMM object and initial values 
+# normc is modified distribution so that variance is fixed
+# to genome-wide estimate (sd.lfst)
+init<-dthmm(x=lfst,
+            Pi=Pi,
+            delta=delta,
+            distn="normc",
+            pm=pm,
+            discrete=FALSE)
+```
+We estimate the parameters of our HMM using the Baum-Welch EM algorithm. This will take a few minutes.
+```R
+# estimate parameters of HMM using Baum-Welch EM algorithm
+# this may take a while (a few minutes)
+
+# set maximum number of iterations and convergence criterion
+ctrl<-bwcontrol(maxiter=1000, tol=1e-6)
+
+# run BaumWelch algorithm
+paramHMM<-BaumWelch(init, ctrl)
+
+# compare initial and estimated transition matrices
+# initial
+Pi
+# estimate
+paramHMM$Pi
+
+# compare initial and estimated distribution parameters
+# (normal means and sds)
+# initial
+pm
+# estimate
+paramHMM$pm
+```
+Lastly we infer the sequence of Markov hidden states using the Viterbi algorithm (i.e. state for each loci: low, medium, or high). This will take less than 1 minute.
+```R
+# predict Markov states using Viterbi algorithm
+fitHMM<-Viterbi(paramHMM)
+# ------------------------------------------------------------------------------
+```
+
+and summarize the results:
+```
+# Summarize results
+# ------------------------------------------------------------------------------
+# mean FSTs of each state: high, medium, and low differentiation
+# (reverse transform logit FSTs means)
+fst.states<-round(1/(1+exp(-1 * paramHMM$pm$mean)),5)
+fst.states
+
+# number of loci in each state
+nloci.states<-table(fitHMM)
+
+# proportion of loci in each state
+proploci.states<-nloci.states/nloci
+proploci.states
+
+# number of contiguous regions for each state
+nregions.states<-unlist(lapply(1:3,
+                    function(x) sum((fitHMM==x)[1:(nloci-1)]-(fitHMM==x)[2:nloci]==1)))
+nregions.states
+
+# put everything together in a table
+summary.table<-cbind(state=c(1,2,3),
+               mean.fst=fst.states,
+               nloci=nloci.states,
+               proploci=proploci.states,
+               nregions=nregions.states)
+# show table
+summary.table
+
+# save to file
+write.table(summary.table, file="fst_hmm_lg01_regions_summary.dsv",
+              quote=F, row.names=F, sep="\t")
+# ------------------------------------------------------------------------------
+<
+```
+We are going to plot the regions using a low, medium, and high differentiation legend
+```R
+# plot regions using differentiation legend
+# Plot to a png file because the number of dots is very high
+# drawing this kind of plot over the network is very slow
+# also opening vectorial files with many objects is slow
+# ------------------------------------------------------------------------------
+png("fst_hmm_lg01.png", width=4000, height=2000)
+par(mar=c(10,12,10,4)+0.1)
+colours<-c("red","dark grey","blue")
+plot(fst, col=colours[fitHMM], ylim=c(0,0.8),
+     xlab="relative position", ylab="FST", main="regions of differentiation",
+     cex.axis=4, cex.lab=4, cex.main=4, mgp=c(7,3,0))
+# 0.1% FST threshold
+abline(h=quantile(fst, prob=0.999,na.rm=T), col="black", lty=3, cex=4, lwd=3)
+text (0,quantile(fst, prob=0.999,na.rm=T), label=">= 0.1%", adj=1, pos=3, cex=4)
+# legend
+legend("topright",legend=c("high", "medium", "low"),
+       pch=1, col=colours, title="differentiation", bty="n", cex=4)
+dev.off()
+# ------------------------------------------------------------------------------
+```
