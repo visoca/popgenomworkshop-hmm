@@ -401,7 +401,7 @@ library(HiddenMarkov)
 library(data.table)
 ```
 
-We modify the function Mstep.norm that will be used for fitting HMMs later (this produces better results):
+We will use a custom function called ```Mstep.normc``` (based on the ```Mstep.norm``` included in the ```HiddenMarkov``` package) to model the observed states (i.e. F<sub>ST</sub>) as a normal with the standard deviation fixed to the genome-wide F<sub>ST</sub> standard deviation estimate. This function will be used for fitting a HMM later.
 ```R
 # Modified version of Mstep.norm for fitting HMM below
 # ------------------------------------------------------------------------
@@ -431,7 +431,7 @@ fst.HVAxHVC<-fread("timemaHVAxHVC.fst.dsv", header=T, sep="\t")
 ```
 and restrict the analyses to a single linkage group:
 ```R
-# Use only one linkage group
+# Use only one linkage group for this example
 fst<-fst.HVAxHVC[grep("^lg01_", fst.HVAxHVC$locus),]$fst
 #fst<-fst.HVAxHVC[grep("^lg08_", fst.HVAxHVC$locus),]$fst
 ```
@@ -571,21 +571,22 @@ We are going to plot the regions using a low, medium, and high differentiation l
 # drawing this kind of plot over the network is very slow
 # also opening vectorial files with many objects is slow
 # ------------------------------------------------------------------------------
-png("fst_hmm_lg01.png", width=4000, height=2000)
+png("fst_hmm_lg01.png", width=4000, height=1000)
 par(mar=c(10,12,10,4)+0.1)
 colours<-c("red","dark grey","blue")
 plot(fst, col=colours[fitHMM], ylim=c(0,0.8),
-     xlab="relative position", ylab="FST", main="regions of differentiation",
-     cex.axis=4, cex.lab=4, cex.main=4, mgp=c(7,3,0))
+     xlab="relative position", ylab=expression("F"[ST]), main="regions of differentiation",
+     cex=1, cex.axis=4, cex.lab=4, cex.main=4, mgp=c(7,3,0))
 
 # add horizontal line to illustrate top 0.1% FST values
 abline(h=quantile(fst, prob=0.999,na.rm=T), col="black", lty=3, cex=4, lwd=3)
-text (0,quantile(fst, prob=0.999,na.rm=T), label=">= 0.1%", adj=1, pos=3, cex=4)
+text (0,quantile(fst, prob=0.999,na.rm=T)+0.025, label=expression("">=" 0.1%"), adj=1, pos=2, cex=3)
 
 # legend
-legend("topright",legend=c("high", "medium", "low"),
+legend("topright",legend=c("high", "medium", "low"), 
        pch=1, col=colours, title="differentiation", bty="n", cex=4)
 dev.off()
+
 # ------------------------------------------------------------------------------
 ```
 We have obtained the size of the regions in number of SNPs so far, let's get the actual size in base pairs. First, we use a function to get the size of regions in bp given their coordinates (lb=lower boundaries, ub=upper boundaries) and some information about the lenght and order of the scaffold order in the linkage groups. This has an extra complication because of the particularities of the *T. cristinae* draft genome, where scaffolds were assigned to linkage groups in a particular order using genetic information from crosses. Actually, the values obtained here are only approximations, because although the order of the scaffolds in a linkage group is known, the distance among them (i.e. th number of bp) is not.
@@ -629,5 +630,60 @@ lgordscalen<-lgordscalen[lgordscalen$lg==1,]
 loci.pos<-as.numeric(gsub(".*:","",fst.HVAxHVC$locus))
 loci.ord<-as.numeric(gsub(".*ord|_scaf.*","",fst.HVAxHVC$locus))
 loci.sca<-as.numeric(gsub(".*_scaf|:.*","",fst.HVAxHVC$locus))
+# ------------------------------------------------------------------------------
+```
+Now get sizes of regions of high differentiation:
+```R
+# high differentiation regions
+# ------------------------------------------------------------------------------
+lb.locindex<-which(fitHMM[2:nloci]==1 & fitHMM[1:(nloci-1)]!=1)
+ub.locindex<-which(fitHMM[1:(nloci-1)]==1 & fitHMM[2:nloci]!=1)
+if (length(lb.locindex)<length(ub.locindex)) lb.locindex<-c(1,lb.locindex)
+if (length(lb.locindex)>length(ub.locindex)) ub.locindex<-c(ub.locindex,nloci)
+
+hidif.regions<-get.regions(lb.locindex,ub.locindex,loci.ord,loci.pos,lgordscalen)
+write.table(hidif.regions, file="fst_hmm_lg01_hidif_regions.dsv", quote=F, sep="\t")
+# ------------------------------------------------------------------------------
+```
+medium differentiation:
+```R
+# medium differentiation regions
+# ------------------------------------------------------------------------------
+lb.locindex<-which(fitHMM[2:nloci]==2 & fitHMM[1:(nloci-1)]!=2)
+ub.locindex<-which(fitHMM[1:(nloci-1)]==2 & fitHMM[2:nloci]!=2)
+if (length(lb.locindex)<length(ub.locindex)) lb.locindex<-c(1,lb.locindex)
+if (length(lb.locindex)>length(ub.locindex)) ub.locindex<-c(ub.locindex,nloci)
+
+medif.regions<-get.regions(lb.locindex,ub.locindex,loci.ord,loci.pos,lgordscalen)
+write.table(medif.regions, file="fst_hmm_lg01_medif_regions.dsv", quote=F, sep="\t")
+# ------------------------------------------------------------------------------
+```
+adn low differentiation:
+```R
+# low differentiation regions
+# ------------------------------------------------------------------------------
+lb.locindex<-which(fitHMM[2:nloci]==3 & fitHMM[1:(nloci-1)]!=3)
+ub.locindex<-which(fitHMM[1:(nloci-1)]==3 & fitHMM[2:nloci]!=3)
+if (length(lb.locindex)<length(ub.locindex)) lb.locindex<-c(1,lb.locindex)
+if (length(lb.locindex)>length(ub.locindex)) ub.locindex<-c(ub.locindex,nloci)
+
+lodif.regions<-get.regions(lb.locindex,ub.locindex,loci.ord,loci.pos,lgordscalen)
+write.table(lodif.regions, file="fst_hmm_lg01_lodif_regions.dsv", quote=F, sep="\t")
+# ------------------------------------------------------------------------------
+```
+Finally, we plot the distribution of sizes for high, medium, and low differentiation regions. 
+```R
+# Compare distribution of sizes
+# ------------------------------------------------------------------------------
+png("fst_hmm_lg01_regions_size.png", width=3000, height=1000)
+par(mfrow=c(1,3))
+par(mar=c(15,15,10,4)+0.1,  mgp=c(7,3,0))
+hist(hidif.regions$length/1000,main="high differentiation regions",
+        xlim=c(0,300),xlab="size (Kbp)",breaks=50, cex.axis=4, cex.lab=4, cex.main=4)
+hist(medif.regions$length/1000,main="medium differentiation regions",
+        xlim=c(0,300), xlab="size (Kbp)",breaks=50, cex=4, cex.axis=4, cex.lab=4, cex.main=4)
+hist(lodif.regions$length/1000,main="low differentiation regions",
+        xlim=c(0,300), xlab="size (Kbp)", breaks=50, cex=4, cex.axis=4, cex.lab=4, cex.main=4)
+dev.off()
 # ------------------------------------------------------------------------------
 ```
