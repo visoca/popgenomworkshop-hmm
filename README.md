@@ -4,7 +4,7 @@
 
 #### Victor Soria-Carrasco
 
-The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach.
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. 
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
@@ -259,7 +259,7 @@ where *Hw* is the within-population heterozygosity, *Hb* is the between-populati
 
 Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```.
 
-We are going to use the code provided in the script ```fst.R``` for F<sub>ST</sub> estimation. We will go here step by step (remember this has be run within ```R```).
+We are going to use the code provided in the script ```fst.R``` for F<sub>ST</sub> estimation. We will go here step by step (remember this code has to be run within ```R```).
 
 First we change the working directory:
 ```R
@@ -577,12 +577,57 @@ colours<-c("red","dark grey","blue")
 plot(fst, col=colours[fitHMM], ylim=c(0,0.8),
      xlab="relative position", ylab="FST", main="regions of differentiation",
      cex.axis=4, cex.lab=4, cex.main=4, mgp=c(7,3,0))
-# 0.1% FST threshold
+
+# add horizontal line to illustrate top 0.1% FST values
 abline(h=quantile(fst, prob=0.999,na.rm=T), col="black", lty=3, cex=4, lwd=3)
 text (0,quantile(fst, prob=0.999,na.rm=T), label=">= 0.1%", adj=1, pos=3, cex=4)
+
 # legend
 legend("topright",legend=c("high", "medium", "low"),
        pch=1, col=colours, title="differentiation", bty="n", cex=4)
 dev.off()
+# ------------------------------------------------------------------------------
+```
+We have obtained the size of the regions in number of SNPs so far, let's get the actual size in base pairs. First, we use a function to get the size of regions in bp given their coordinates (lb=lower boundaries, ub=upper boundaries) and some information about the lenght and order of the scaffold order in the linkage groups. This has an extra complication because of the particularities of the *T. cristinae* draft genome, where scaffolds were assigned to linkage groups in a particular order using genetic information from crosses. Actually, the values obtained here are only approximations, because although the order of the scaffolds in a linkage group is known, the distance among them (i.e. th number of bp) is not.
+```R
+# function to get size of regions
+# ------------------------------------------------------------------------------
+get.regions<-function(lb=NA,ub=NA, loci.ord=NA, loci.pos=NA, lgordscalen=NA){
+  nregions<-length(lb)
+  bpsize<-numeric(nregions)
+  for (i in 1:nregions){
+    if (is.na(loci.ord[lb[i]]) || is.na(loci.ord[ub[i]])){
+      cat ("I: ", i, "\n")
+    }
+    if (loci.ord[lb[i]] == loci.ord[ub[i]]){ # same scaffold
+      bpsize[i]<-loci.pos[ub[i]]-loci.pos[lb[i]]
+    }
+    else{
+      bpsize[i]<-(lgordscalen[lgordscalen$ord==loci.ord[lb[i]],]$length
+                  -loci.pos[lb[i]]
+                  +sum(lgordscalen[(lgordscalen$ord>loci.ord[lb[i]] &
+                                    lgordscalen$ord<loci.ord[ub[i]]),]$length)
+                  +loci.pos[ub[i]])
+    }
+  }
+
+  regions<-data.frame(lb.ord=loci.ord[lb], ub.ord=loci.ord[ub],
+                      lb.sca=loci.sca[lb], ub.sca=loci.sca[ub],
+                      lb.pos=loci.pos[lb], ub.pos=loci.pos[ub],
+                      length=bpsize)
+  return(regions)
+}
+# ------------------------------------------------------------------------------
+```
+We need to get some info about the order an size of the scaffolds from the file ```lg_ord_sca_length.dsv```
+```R
+# load order and size of scaffolds in draft genome
+# ------------------------------------------------------------------------------
+lgordscalen<-read.table("data/lg_ord_sca_length.dsv",header=T,sep="\t")
+lgordscalen<-lgordscalen[lgordscalen$lg==1,]
+
+loci.pos<-as.numeric(gsub(".*:","",fst.HVAxHVC$locus))
+loci.ord<-as.numeric(gsub(".*ord|_scaf.*","",fst.HVAxHVC$locus))
+loci.sca<-as.numeric(gsub(".*_scaf|:.*","",fst.HVAxHVC$locus))
 # ------------------------------------------------------------------------------
 ```
