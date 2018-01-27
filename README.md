@@ -4,7 +4,7 @@
 
 #### Victor Soria-Carrasco
 
-The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. 
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. Data and scripts used during this practical will be available in a shared folder in Iceberg, the University of Sheffield HPC cluster, which will allow faster transfers. However, scripts are also available in this repository and data can be downloaded [here](), in case attendees would like to use it for practice after the workshop.
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
@@ -257,9 +257,7 @@ number of variants using F<sub>ST</sub>. We are going to use the F<sub>ST</sub> 
 
 where *Hw* is the within-population heterozygosity, *Hb* is the between-population heterozygosity, and *p<sub>1</sub>* and *p<sub>2</sub>* are the allele frequencies in each population.
 
-Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```.
-
-We are going to use the code provided in the script ```fst.R``` for F<sub>ST</sub> estimation. We will go here step by step (remember this code has to be run within ```R```).
+We are going to use the code provided in the script ```fst.R``` for F<sub>ST</sub> estimation. This script can be run in batch mode like executing: ```Rscript scripts/fst.R```, but you are likely to learn much more if you follow the steps below to run it step by step. Be aware that this is ```R``` code and will have to run within an ```R``` session. Open an R session simply typing the command ```R```.
 
 First we change the working directory:
 ```R
@@ -383,8 +381,13 @@ write.table(fst.stats,file="timemaHVAxHVC.lgs.fst.dsv",
 # ------------------------------------------------------------------------------
 ```
 
+Remember to quit the ```R``` session when finished:
+```R
+quit()
+```
+
 ## 4. Delimitation of contiguous regions of differentiation using a HMM model
-We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation, following the approach of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107). We will use the package [```HiddenMarkov```](https://cran.r-project.org/web/packages/HiddenMarkov/index.html) to classify the genome in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation across the genome (and potentially under selection). We are going to use the code provided in the script ```fitHMM.R``` for that.
+We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation, following the approach of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107). We will use the package [```HiddenMarkov```](https://cran.r-project.org/web/packages/HiddenMarkov/index.html) to classify the genome in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation across the genome (and potentially under selection). We are going to use the code provided in the script ```fitHMM.R``` for that. This script can be run in batch mode like executing: ```Rscript scripts/fit_hmm.R```, but you are likely to learn much more if you follow the steps below to run it step by step. Be aware that this is ```R``` code and will have to run within an ```R``` session. Open an R session simply typing the command ```R```.
 
 First we change the working directory:
 ```R
@@ -675,7 +678,7 @@ Finally, we plot the distribution of sizes for high, medium, and low differentia
 ```R
 # Compare distribution of sizes
 # ------------------------------------------------------------------------------
-png("fst_hmm_lg01_regions_size.png", width=3000, height=1000)
+png("fst_hmm_lg01_dif_regions_sizes.png", width=3000, height=1000)
 par(mfrow=c(1,3))
 par(mar=c(15,15,10,4)+0.1,  mgp=c(7,3,0))
 hist(hidif.regions$length/1000,main="high differentiation regions",
@@ -686,4 +689,8 @@ hist(lodif.regions$length/1000,main="low differentiation regions",
         xlim=c(0,300), xlab="size (Kbp)", breaks=50, cex=4, cex.axis=4, cex.lab=4, cex.main=4)
 dev.off()
 # ------------------------------------------------------------------------------
+```
+Remember to quit the ```R``` session when finished:
+```R
+quit()
 ```
