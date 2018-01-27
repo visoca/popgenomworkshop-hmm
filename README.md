@@ -9,9 +9,9 @@ The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) b
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
 
-Connect to Iceberg HPC cluster (change user by your username, e.g. cs4ab33):
+Connect to Iceberg HPC cluster (change *myuser* by your username):
 ```bash
-ssh cs4ab33@iceberg.sheffield.ac.uk
+ssh myuser@iceberg.sheffield.ac.uk
 ```
 Request an interactive session:
 ```bash
@@ -65,11 +65,11 @@ ls -lh data
 ```
 
 >total 2.5G<br>
->-rw-r--r-- 1 cs4ab33 cs  22K Jan 26 12:31 lg_ord_sca_length.dsv<br>
->-rw-r--r-- 1 cs4ab33 cs 768M Jan 26 12:31 timemaHVA.gl<br>
->-rw-r--r-- 1 cs4ab33 cs 467M Jan 26 12:31 timemaHVA.vcf.gz<br>
->-rw-r--r-- 1 cs4ab33 cs 781M Jan 26 12:31 timemaHVC.gl<br>
->-rw-r--r-- 1 cs4ab33 cs 476M Jan 26 12:31 timemaHVC.vcf.gz<br>
+>-rw-r--r-- 1 myuser cs  22K Jan 26 12:31 lg_ord_sca_length.dsv<br>
+>-rw-r--r-- 1 myuser cs 768M Jan 26 12:31 timemaHVA.gl<br>
+>-rw-r--r-- 1 myuser cs 467M Jan 26 12:31 timemaHVA.vcf.gz<br>
+>-rw-r--r-- 1 myuser cs 781M Jan 26 12:31 timemaHVC.gl<br>
+>-rw-r--r-- 1 myuser cs 476M Jan 26 12:31 timemaHVC.vcf.gz<br>
 
 There is a vcf file containing single nucleotide polymorphisms (SNPs) from whole genome sequences of 20 individuals for each population (HVA and HVC). vcf is a very popular format for genetic variants, you can find more info [here](http://www.internationalgenome.org/wiki/Analysis/vcf4.0/). You can have a look at the file content with the following commands:
 ```bash
