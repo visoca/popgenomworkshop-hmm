@@ -236,7 +236,7 @@ The columns are: locus, allele frequency from counts, and allele frequency infer
 echo -e "locus\tafHVA\tafHVC" > timemaHVAxHVC.alfreq.txt
 
 # join files by locus (1st field), retain only locus id (1st field) and ML AFs (3rd and 5th fields)
-$ join -j 1 timemaHVA.alfreq.txt timemaHVC.alfreq.txt | \
+join -j 1 timemaHVA.alfreq.txt timemaHVC.alfreq.txt | \
 awk '{OFS="\t"; print $1,$3,$5}' >> timemaHVAxHVC.alfreq.txt
 
 # show file
@@ -253,19 +253,23 @@ less -S timemaHVAxHVC.alfreq.txt
 We are going to calculate genetic differentiation between two populations and for a large
 number of variants using F<sub>ST</sub>. We are going to use the F<sub>ST</sub> Hudson's estimator for every SNP:
 
+![Hudson FST](Hudson_fst.png)
+
 where *Hw* is the within-population heterozygosity, *Hb* is the between-population heterozygosity, and *p<sub>1</sub>* and *p<sub>2</sub>* are the allele frequencies in each population.
 
-Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```. 
+Notice we are going to use  ```R``` for calculating F<sub>ST</sub> and the rest of downstream analyses. Open an R session simply typing the command ```R```.
 
 For F<sub>ST</sub> estimating we are going to use the code provided in the script ```fst.R```. We will go here step by step (remember this has be run within ```R```).
 
 First we are going to change the working directory:
 ```R
-setwd("/data/$USER/fst_hmm")
+user<-Sys.getenv("USER")
+wkpath<-paste("/data/",user, "/fst_hmm",sep="")
+setwd(wkpath)
 ```
 and then we are going to load a library that will greatly speed up the loading of bit files:
 ```R
-# library to speed up loading of big tables
+# load library to speed up loading of big tables
 library(data.table)
 ```
 This is the function to calculate Hudson's F<sub>ST</sub>:
@@ -285,59 +289,90 @@ Then we load allele frequencies:
 ```R
 # load file with allele frequencies
 pops.af<-fread("timemaHVAxHVC.alfreq.txt", header=T, sep="\t")
+# check table
+head(pops.af)
 ```
-and calculate the F<sub>ST</sub>s:
+and now calculate the F<sub>ST</sub>s for every SNP:
 ```R
 # Calculate Fst
 fst.HVAxHVC<-hudsonFst(locus=pops.af$locus, p1=pops.af$afHVA,p2=pops.af$afHVC)
-
+# check results
+head(fst.HVAxHVC)
+```
+Write results to file:
+```R
 # Write table to file
 write.table(fst.HVAxHVC, file="timemaHVAxHVC.fst.dsv", 
                 quote=F, row.names=F, sep="\t")
-
+```
+If you are working in a graphical session, you can plot the F<sub>ST</sub> histogram:
+```R
 # plot FST histogram
 hist(fst.HVAxHVC$fst, breaks=50)
-
+```
+Now genome-wide F<sub>ST</sub> statistics are calculated as "ratio of averages" (i.e. averaging the variance components - numerator and denominator - separately), as suggested in [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full)
+```R
 # Genome-wide FST statistics
 # ------------------------------------------------------------------------------
-# It is better to calculate mean FST using numerator and denominator
+# Calculate genome-wide FST as "ratio of averages" following Bhatia et al. 2013
 nloci<-length(na.exclude(fst.HVAxHVC$fst))
 fst.mean<-1-((sum(fst.HVAxHVC$numerator)/nloci)/(sum(fst.HVAxHVC$denominator)/nloci))
 fst.mean
-mean(fst.HVAxHVC$fst,na.rm=T)
+```
 
+You can see "average of ratios" (i.e. mean of F<sub>ST</sub>s) produces a noticeable different (underestimated) value:
+```R
+# "average of ratios" yields a noticeable lower value
+mean(fst.HVAxHVC$fst,na.rm=T)
+```
+Calculate median and upper quantiles (95%,97.5%,99%):
+```R
 # min, max, quantiles
 min(fst.HVAxHVC$fst,na.rm=T)
 max(fst.HVAxHVC$fst,na.rm=T)
-fst.quantile<-quantile(fst.HVAxHVC$fst, prob=c(0.5,0.025,0.975), na.rm=T)
+fst.quantile<-quantile(fst.HVAxHVC$fst, prob=c(0.5,0.95,0.975,0.99), na.rm=T)
 fst.quantile
 
-fst.genome<-c("genome",nloci, fst.mean,fst.quantile)
+fst.genome<-c("genome",nloci,fst.mean,fst.quantile)
 # ------------------------------------------------------------------------------
-
+```
+Calculate F<sub>ST</sub> separately for each major linkage group (~chromosomes):
+```R
 # FST stats by linkage group
 # ------------------------------------------------------------------------------
+# get linkage groups from loci names
 lgs<-unique(gsub("_ord.*","", fst.HVAxHVC$locus))
-fst.stats.lgs<-lapply(lgs, function(lg){
+
+# function to get fst (including median and quantiles) for a linkage group
+fst.lg<-function(lg){
               fst<-fst.HVAxHVC[grep(paste("^",lg,"_",sep=""), fst.HVAxHVC$locus),]
               nloci<-length(na.exclude(fst$fst))
               fst.mean<-1-((sum(fst$numerator)/nloci)/(sum(fst$denominator)/nloci))
-              fst.quantile<-quantile(fst$fst, prob=c(0.5,0.025,0.975), names=F, na.rm=T)
-              return(c(nloci=nloci,
-                       mean=fst.mean,median=fst.quantile[1],
-                       lo95=fst.quantile[2],hi95=fst.quantile[3]))
-            })
+              fst.quantile<-quantile(fst$fst, prob=c(0.5,0.95,0.975,0.99), names=F, na.rm=T)
+              return(c(nloci=nloci,mean=fst.mean,fst.quantile))
+            }
+
+# calculate fst for each linkage group
+fst.stats.lgs<-lapply(lgs, fst.lg)
+
+# put them together in a data frame
 fst.stats.lgs<-data.frame(lg=lgs,do.call("rbind",fst.stats.lgs),stringsAsFactors=F)
 
-# Add genome
-fst.stats<-rbind(fst.genome,fst.stats.lgs)
+# put names of columns
+colnames(fst.stats.lgs)<-c("lg","nloci","mean","median","q95%","q97.5%","q99%")
 # ------------------------------------------------------------------------------
+```
+Put together F<sub>ST</sub> estimates for whole genome and linkage groups and write to a text file:
+```R
+# put together whole genome and lgs estimates
+fst.stats<-rbind(fst.genome,fst.stats.lgs)
+
+# and check
+fst.stats
 
 # Write summary table to file
-# ------------------------------------------------------------------------------
 write.table(fst.stats,file="timemaHVAxHVC.lgs.fst.dsv",
             quote=F, row.names=F, sep="\t")
-# ------------------------------------------------------------------------------
 ```
 
 ## 4. Delimitation of contiguous regions of differentiation using a HMM model
