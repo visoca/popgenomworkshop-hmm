@@ -138,16 +138,16 @@ less -S timemaHVA.gl
 >20 4391556<br>
 >timemaHVA_8021022 timemaHVA_8021024 timemaHVA_8021026 timemaHVA_8021027 timemaHVA_8021028 timemaHVA_<br>
 >1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1<br>
->lg01_ord0000_scaf00353:8612 0 0 0 0 0 0 0 6 75 0 6 7 0 15 85 0 6 41 0 3 34 0 3 4 0 0 0 0 9 46 0 9 6<br>
->lg01_ord0000_scaf00353:8752 0 9 6 0 12 10 0 3 37 0 6 7 29 0 6 0 24 71 0 7 14 0 18 12 0 12 70 0 9 75<br>
->lg01_ord0000_scaf00353:8758 0 12 11 0 18 19 0 3 40 0 6 7 0 6 45 0 24 77 0 39 60 0 21 16 0 9 42 0 12<br>
->lg01_ord0000_scaf00353:8770 0 12 11 0 18 19 0 6 69 0 6 7 0 6 44 0 24 72 0 42 62 0 27 20 0 6 7 0 9 3<br>
->lg01_ord0000_scaf00353:8772 0 12 11 0 18 19 0 6 67 0 6 7 0 6 39 0 24 73 0 13 17 0 27 20 0 6 7 0 9 3<br>
->lg01_ord0000_scaf00353:8797 0 15 14 0 18 43 0 6 72 0 6 7 0 6 45 0 24 48 0 40 26 0 30 22 0 9 40 0 6<br>
->lg01_ord0000_scaf00353:8838 0 12 11 0 12 37 0 3 40 0 6 7 0 0 0 0 18 12 0 18 5 0 24 29 0 9 43 0 9 46<br>
->lg01_ord0000_scaf00353:8845 0 12 11 22 0 0 40 3 0 0 6 7 0 3 37 0 15 12 0 54 82 0 21 23 29 0 0 34 1<br>
->lg01_ord0000_scaf00353:8851 0 12 11 0 12 43 0 3 35 0 9 9 0 3 39 0 15 12 0 51 84 0 18 16 0 9 41 0 6<br>
->lg01_ord0000_scaf00353:8862 0 12 11 0 6 39 0 3 34 0 9 9 0 3 33 0 15 12 0 48 79 0 21 16 0 9 43 0 9 4<br>
+>lg01_ord0000_scaf00353:8612 0 0 0 0 0 0 0 6 75 0 6 7 0 15 85 0 6 41 0 3 34 0 3 4 0 0 0 0 9 46 0 <br>
+>lg01_ord0000_scaf00353:8752 0 9 6 0 12 10 0 3 37 0 6 7 29 0 6 0 24 71 0 7 14 0 18 12 0 12 70 0 9<br>
+>lg01_ord0000_scaf00353:8758 0 12 11 0 18 19 0 3 40 0 6 7 0 6 45 0 24 77 0 39 60 0 21 16 0 9 42 0<br>
+>lg01_ord0000_scaf00353:8770 0 12 11 0 18 19 0 6 69 0 6 7 0 6 44 0 24 72 0 42 62 0 27 20 0 6 7 0 <br>
+>lg01_ord0000_scaf00353:8772 0 12 11 0 18 19 0 6 67 0 6 7 0 6 39 0 24 73 0 13 17 0 27 20 0 6 7 0 <br>
+>lg01_ord0000_scaf00353:8797 0 15 14 0 18 43 0 6 72 0 6 7 0 6 45 0 24 48 0 40 26 0 30 22 0 9 40 0<br>
+>lg01_ord0000_scaf00353:8838 0 12 11 0 12 37 0 3 40 0 6 7 0 0 0 0 18 12 0 18 5 0 24 29 0 9 43 0 9<br>
+>lg01_ord0000_scaf00353:8845 0 12 11 22 0 0 40 3 0 0 6 7 0 3 37 0 15 12 0 54 82 0 21 23 29 0 0 34<br>
+>lg01_ord0000_scaf00353:8851 0 12 11 0 12 43 0 3 35 0 9 9 0 3 39 0 15 12 0 51 84 0 18 16 0 9 41 0<br>
+>lg01_ord0000_scaf00353:8862 0 12 11 0 6 39 0 3 34 0 9 9 0 3 33 0 15 12 0 48 79 0 21 16 0 9 43 0 <br>
 
 The first line shows the number of samples and the number of SNPs, the second line show the samples ids, and the third line specifices what samples will be used for analyses. The lines below represent a SNP per line. The first field is the id (scaffold:position in this case) and it is followed by the phred scaled genotype likelihoods for the three possible genotypes (all variants are biallelic) for each individual. Therefore there are 3 x number of samples fields genotype likelihoods on each line.
 
