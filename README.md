@@ -75,11 +75,11 @@ ls -lh data
 
 There is a vcf file containing single nucleotide polymorphisms (SNPs) from whole genome sequences of 20 individuals for each population (HVA and HVC). vcf is a very popular format for genetic variants, you can find more info [here](http://www.internationalgenome.org/wiki/Analysis/vcf4.0/). You can have a look at the file content with the following commands:
 ```bash
-gzip -dc timemaHVA.vcf.gz | less -S
+gzip -dc data/timemaHVA.vcf.gz | less -S
 # or with bcftools
-bcftools view timemaHVA.vcf.gz | less -S
+bcftools view data/timemaHVA.vcf.gz | less -S
 # excluding long header
-bcftools view -H timemaHVA.vcf.gz | less -S
+bcftools view -H data/timemaHVA.vcf.gz | less -S
 ```
 They need to be converted to the stripped down format (*gl*, genotype likelihood) required for ```estpEM```, the program we are going to use for allele frequency estimation later. This is done with a custom Perl script called ```bcf2gl.pl```. To process the files in the cluster in parallel in different nodes, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) that calls the Perl script for each file. Let's have a look at the ```bcf2gl.sh``` script with the text editor nano:
 ```bash
