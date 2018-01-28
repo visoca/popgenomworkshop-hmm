@@ -4,7 +4,9 @@
 
 #### Victor Soria-Carrasco
 
-The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. Data and scripts used during this practical will be available in a shared folder in Iceberg, the University of Sheffield HPC cluster, which will allow faster transfers. However, scripts are also available in this repository and data can be downloaded [here](), in case attendees would like to use it for practice after the workshop.
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. 
+
+Data and scripts used during this practical will be available in a shared folder in Iceberg, the University of Sheffield HPC cluster, which will allow faster transfers. However, in case attendees would like to use it for practice after the workshop, scripts are also available in [this repository](https://github.com/visoca/popgenomworkshop-hmm) and data can be downloaded [here](https://drive.google.com/file/d/1w9g9vHGDmt8LUiqeGeI0DP6aOSo7O_iK/view?usp=sharing) (and results [here]()). The source code of ```estpEM```, the program used to estimate allele frequencies from genotype likelihoods, is available [here](https://bitbucket.org/visoca/transitions_genomic_differentiation_timema/src/c662bf2ddeb03f8b4de934d88c4397052c1931f4/fst/estpEM_2014-10-08.tar.gz?at=master).
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
@@ -48,7 +50,7 @@ Copy data:
 ```bash
 cp -r /usr/local/extras/Genomics/workshops/January2018/fst_hmm/data ./fst_hmm/
 ```
-Copy results:
+To check you are getting the expected results, you can also copy a directory containing all the files that should be produced after running this practical:
 ```bash
 cp -r /usr/local/extras/Genomics/workshops/January2018/fst_hmm/results ./fst_hmm/
 ```
