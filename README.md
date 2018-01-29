@@ -11,7 +11,7 @@ The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) b
 Data and scripts used during this practical will be available in a shared folder in Iceberg, the University of Sheffield HPC cluster, which will allow faster transfers. However, in case attendees would like to use it for practice after the workshop, scripts are also available in [this repository](https://github.com/visoca/popgenomworkshop-hmm) and data can be downloaded [here](https://drive.google.com/file/d/1w9g9vHGDmt8LUiqeGeI0DP6aOSo7O_iK/view?usp=sharing) (and results [here](https://drive.google.com/file/d/1_FUNj1S3GwerRVPHlhDG5Emp3rAVRo1p/view?usp=sharing)). The source code of ```estpEM```, the program used to estimate allele frequencies from genotype likelihoods, is available [here](https://bitbucket.org/visoca/transitions_genomic_differentiation_timema/src/c662bf2ddeb03f8b4de934d88c4397052c1931f4/fst/estpEM_2014-10-08.tar.gz?at=master).
 
 ### Resources
-* [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub estimation and interpretation.
+* [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
 * [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) - First study where HMMs were used to delimit regions of differentiation.
 * [HMM](https://cran.r-project.org/web/packages/HMM/index.html) - R package to fit Hidden Markov Models
 
