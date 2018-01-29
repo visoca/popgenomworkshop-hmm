@@ -88,7 +88,11 @@ bcftools view data/timemaHVA.vcf.gz | less -S
 # excluding long header
 bcftools view -H data/timemaHVA.vcf.gz | less -S
 ```
-They need to be converted to the stripped down format (*gl*, genotype likelihood) required for ```estpEM```, the program we are going to use for allele frequency estimation later. This is done with a custom Perl script called ```bcf2gl.pl```. To process the files in the cluster in parallel in different nodes, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) that calls the Perl script for each file. Let's have a look at the ```bcf2gl.sh``` script with the text editor nano:
+They need to be converted to the stripped down format (*gl*, genotype likelihood) required for ```estpEM```, the program we are going to use for allele frequency estimation later. This is done with a custom Perl script called ```bcf2gl.pl```, which has a very simple syntax. For example, to convert the file for the HVA population, we would use the command:
+```bash
+scripts/bcf2gl.pl -i data/timemaHVA.vcf.gz -o timemaHVA.gl
+```
+To speed things up by processing the files in the cluster in parallel in different nodes, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) that calls the Perl script for each file. Let's have a look at the ```bcf2gl.sh``` script with the text editor nano:
 ```bash
 nano scripts/bcf2gl.sh
 ```
