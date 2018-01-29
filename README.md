@@ -4,7 +4,7 @@
 
 #### Victor Soria-Carrasco
 
-The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a Hidden Markov Model (HMM) approach. We are going to use whole genome data of a pair of parapatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. The HVA population was sampled from *Adenostoma*, where bugs with a white strip are favoured, whereas the HVC population was sampled from *Ceanothus*, where green bugs have an advantage. This data belongs to larger dataset of four populations pairs used in [Soria-Carrasco et al. 2014](http://science.sciencemag.org/content/344/6185/738). In that work, an approach similar to that of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) was followed to investigate parallel evolution by identifying unique and shared regions of accentuated differentiation in four pairs of natural populations.  
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of accentuated differentiation across the genome using a Hidden Markov Model (HMM) approach. We are going to use whole genome data of a pair of parapatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. The HVA population was sampled from *Adenostoma*, where bugs with a white strip are favoured, whereas the HVC population was sampled from *Ceanothus*, where green bugs have an advantage. This data belongs to larger dataset of four populations pairs used in [Soria-Carrasco et al. 2014](http://science.sciencemag.org/content/344/6185/738). In that work, an approach similar to that of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) was followed to investigate parallel evolution by identifying unique and shared regions of accentuated differentiation in four pairs of natural populations.  
 
 ![Timema cristinae populations](timema.png)
 
@@ -13,7 +13,9 @@ Data and scripts used during this practical will be available in a shared folder
 ### Resources
 * [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
 * [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) - First study where HMMs were used to delimit regions of differentiation.
+* [Wolf & Ellegren 2017](https://www.nature.com/articles/nrg.2016.133) - Review about what different evolutionary processes can generate genomics islands of elevated differentiation.
 * [HMM](https://cran.r-project.org/web/packages/HMM/index.html) - R package to fit Hidden Markov Models
+
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
