@@ -4,9 +4,16 @@
 
 #### Victor Soria-Carrasco
 
-The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a HMM approach. We are going to use whole genome data of a pair of sympatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. 
+The aim of this practical is to estimate differentiation (i.e. F<sub>ST</sub>) between a pair of populations and identify contiguous regions of differentiation across the genome using a Hidden Markov Model (HMM) approach. We are going to use whole genome data of a pair of parapatric populations of *Timema cristinae* stick insects that live on different host plants and experience different selective pressures. The HVA population was sampled from *Adenostoma*, where bugs with a white strip are favoured, whereas the HVC population was sampled from *Ceanothus*, where green bugs have an advantage. This data belongs to larger dataset of four populations pairs used in [Soria-Carrasco et al. 2014](http://science.sciencemag.org/content/344/6185/738). In that work, an approach similar to that of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) was followed to identify unique and shared regions of accentuated differentiation in four pairs of natural populations.  
+
+![Timema cristinae populations](timema.png)
 
 Data and scripts used during this practical will be available in a shared folder in Iceberg, the University of Sheffield HPC cluster, which will allow faster transfers. However, in case attendees would like to use it for practice after the workshop, scripts are also available in [this repository](https://github.com/visoca/popgenomworkshop-hmm) and data can be downloaded [here](https://drive.google.com/file/d/1w9g9vHGDmt8LUiqeGeI0DP6aOSo7O_iK/view?usp=sharing) (and results [here](https://drive.google.com/file/d/1_FUNj1S3GwerRVPHlhDG5Emp3rAVRo1p/view?usp=sharing)). The source code of ```estpEM```, the program used to estimate allele frequencies from genotype likelihoods, is available [here](https://bitbucket.org/visoca/transitions_genomic_differentiation_timema/src/c662bf2ddeb03f8b4de934d88c4397052c1931f4/fst/estpEM_2014-10-08.tar.gz?at=master).
+
+### Resources
+[Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full)
+[Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107)
+[HMM R package to fit Hidden Markov Models]https://cran.r-project.org/web/packages/HMM/index.html
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
