@@ -607,7 +607,7 @@ dev.off()
 
 # ------------------------------------------------------------------------------
 ```
-We have obtained the size of the regions in number of SNPs so far, let's get the actual size in base pairs. First, we use a function to get the size of regions in bp given their coordinates (lb=lower boundaries, ub=upper boundaries) and some information about the lenght and order of the scaffold order in the linkage groups. This has an extra complication because of the particularities of the *T. cristinae* draft genome, where scaffolds were assigned to linkage groups in a particular order using genetic information from crosses. Actually, the values obtained here are only approximations, because although the order of the scaffolds in a linkage group is known, the distance among them (i.e. th number of bp) is not.
+We have obtained the size of the regions in number of SNPs so far, let's get the actual size in base pairs. First, we use a function to get the size of regions in bp given their coordinates (lb=lower boundaries, ub=upper boundaries) and some information about the lenght and order of the scaffolds in the linkage groups. This has an extra complication because of the particularities of the *T. cristinae* draft genome, where scaffolds were assigned to linkage groups in a particular order using additional genetic information from crosses. Actually, the values obtained here are only approximations, because although the order of the scaffolds in a linkage group is known, the distance among them (i.e. the number of bp) is not.
 ```R
 # function to get size of regions
 # ------------------------------------------------------------------------------
