@@ -43,6 +43,18 @@ cat /usr/local/extras/Genomics/workshops/January2018/.nanorc >> /home/$USER/.nan
 ```
 ***
 
+#### Note on transferring output files to your local computer for visualization
+***
+You probably will want to transfer files to your own computer for visualization (especially the images). In Linux and Mac, you can do that using rsync on the terminal. For example, to transfer one of the png files or all the results that are generated in this practical, the command would be: 
+```bash
+# transfer png file
+rsync myuser@iceberg.sheffield.ac.uk:/data/myuser/fst_hmm/timemaHVAxHVC.fst.png ./
+# transfer all results
+rsync myuser@iceberg.sheffield.ac.uk:/data/myuser/fst_hmm/*.* ./
+```
+Graphical alternatives are [WinSCP](http://dsavas.staff.shef.ac.uk/software/xconnect/winscp.html) or [Cyberduck](http://www.macupdate.com/app/mac/8392/cyberduck). You can find more detailed information [here](https://www.sheffield.ac.uk/wrgrid/using/access).
+***
+
 Change to your data directory:
 ```bash
 cd /data/$USER/
