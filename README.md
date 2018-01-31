@@ -158,7 +158,7 @@ qsub scripts/bcf2gl.sh
 You can check the status of your jobs with ```Qstat```. Jobs would take ~10 min per file to run, but if you don't want to wait, you can use the files provided in the data folder after deleting the job (replace #jobid with the actual job id):
 ```bash
 qdel #jobid
-cp -r data/*.gl ./
+cp -r results/*.gl ./
 ```
 Output .gl files should look like this:
 ```bash
