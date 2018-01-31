@@ -57,6 +57,7 @@ Another possibility is to email the files, for example:
 echo "Text body" | mail -s "Subject: gemma - hyperparameter plot" -a /data/myuser/fst_hmm/timemaHVAxHVC.fst.png your@email
 ```
 Graphical alternatives are [WinSCP](http://dsavas.staff.shef.ac.uk/software/xconnect/winscp.html) or [Cyberduck](http://www.macupdate.com/app/mac/8392/cyberduck). You can find more detailed information [here](https://www.sheffield.ac.uk/wrgrid/using/access).
+
 ***
 
 Change to your data directory:
