@@ -39,7 +39,7 @@ If you don't get that message, follow the instructions [here](http://soria-carra
 
 In addition, if you want to configure the ```nano``` text editor to have syntax highlighting and line numbering, you can configure it this way:
 ```bash
-cat /usr/local/extras/Genomics/workshops/January2019/.nanorc >> /home/$USER/.nanorc
+cat /usr/local/extras/Genomics/workshops/February2019/.nanorc >> /home/$USER/.nanorc
 ```
 ***
 
@@ -70,15 +70,15 @@ mkdir fst_hmm
 ```
 Copy scripts:
 ```bash
-cp -r /usr/local/extras/Genomics/workshops/January2019/fst_hmm/scripts ./fst_hmm
+cp -r /usr/local/extras/Genomics/workshops/February2019/fst_hmm/scripts ./fst_hmm
 ```
 Copy data:
 ```bash
-cp -r /usr/local/extras/Genomics/workshops/January2019/fst_hmm/data ./fst_hmm/
+cp -r /usr/local/extras/Genomics/workshops/February2019/fst_hmm/data ./fst_hmm/
 ```
 To check you are getting the expected results, you can also copy a directory containing all the files that should be produced after running this practical:
 ```bash
-cp -r /usr/local/extras/Genomics/workshops/January2019/fst_hmm/results ./fst_hmm/
+cp -r /usr/local/extras/Genomics/workshops/February2019/fst_hmm/results ./fst_hmm/
 ```
 Change to the working directory we are going to use for this practical:
 ```bash
