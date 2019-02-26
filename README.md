@@ -261,7 +261,7 @@ That should look like this:
 >lg01_ord0000_scaf00353:8770 0.1199 0.0001<br>
 >lg01_ord0000_scaf00353:8772 0.1791 0.0408<br>
 
-The columns are: locus, allele frequency from counts, and allele frequency inferred by maximum likelihood. Now where going to merge the results from both populations into a single file:
+The columns are: locus, allele frequency from counts, and allele frequency inferred by maximum likelihood. Now we are going to merge the results from both populations into a single file:
 
 ```bash
 # create header
