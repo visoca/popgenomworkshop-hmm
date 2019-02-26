@@ -597,7 +597,6 @@ summary.table
 write.table(summary.table, file="fst_hmm_lg01_regions_summary.dsv",
               quote=F, row.names=F, sep="\t")
 # ------------------------------------------------------------------------------
-<
 ```
 We are going to plot the regions using a low, medium, and high differentiation legend
 ```R
