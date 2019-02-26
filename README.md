@@ -418,7 +418,7 @@ Remember to quit the ```R``` session when finished:
 quit()
 ```
 
-## 4. Delimitation of contiguous regions of differentiation using a HMM model
+## 5. Delimitation of contiguous regions of differentiation using a HMM model
 We will use a 3-state discrete homogeneous Hidden Markov Model (HMM) to delimit contiguous regions of genetic differentiation, following the approach of [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107). We will use the package [```HiddenMarkov```](https://cran.r-project.org/web/packages/HiddenMarkov/index.html) to classify the genome in regions of low, medium, and high differentiation (LDI, IDI, and HDI, respectively). This will allow to investigate the number, size, and distribution of regions of differentiation across the genome (and potentially under selection). We are going to use the code provided in the script ```fitHMM.R``` for that. This script can be run in batch mode like executing: ```Rscript scripts/fit_hmm.R```, but you are likely to learn much more if you follow the steps below to run it step by step. Be aware that this is ```R``` code and will have to run within an ```R``` session. Open an R session simply typing the command ```R```.
 
 First we change the working directory:
