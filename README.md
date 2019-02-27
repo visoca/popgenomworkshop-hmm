@@ -14,8 +14,7 @@ Data and scripts used during this practical will be available in a shared folder
 * [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
 * [Hofer et al. 2012](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-13-107) - First study where HMMs were used to delimit regions of differentiation.
 * [Wolf & Ellegren 2017](https://www.nature.com/articles/nrg.2016.133) - Review about what different evolutionary processes can generate genomics islands of elevated differentiation.
-* [HMM](https://cran.r-project.org/web/packages/HMM/index.html) - R package to fit Hidden Markov Models
-
+* [HiddenMarkov](https://cran.r-project.org/web/packages/HiddenMarkov/index.html) - R package to fit Hidden Markov Models
 
 ## 1. Initial set up
 We are going to create a working directory in a dedicated space in the HPC cluster (/data/$USER) and copy the necessary scripts and data files to run this practical.
