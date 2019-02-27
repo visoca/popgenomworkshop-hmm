@@ -39,10 +39,14 @@ fst.HVAxHVC<-fread("timemaHVAxHVC.fst.dsv", header=T, sep="\t")
 # Use only one linkage group for this example
 fst<-fst.HVAxHVC[grep("^lg01_", fst.HVAxHVC$locus),]$fst
 
+# Remove missing data
+fst<-fst[!is.na(fst)]
+
+# Replace too low Fst values by tractable value
+fst[fst<1e-5]<-1e-5
+
 # logit transform Fst, we will assume a normal logit distribution for each state
 lfst<-log(fst/(1-fst))
-lfst[is.na(lfst)==T]<-log(0.0001/0.9999)
-lfst[is.infinite(lfst)==T]<-log(0.0001/0.9999)
 
 # nloci, mean and sd (used below)
 nloci<-length(lfst)
