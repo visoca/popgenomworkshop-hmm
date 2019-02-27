@@ -468,13 +468,13 @@ and restrict the analyses to a single linkage group:
 # Use only one linkage group for this example
 fst<-fst.HVAxHVC[grep("^lg01_", fst.HVAxHVC$locus),]$fst
 ```
-F<sub>ST</sub> is transformed using a logit function so that we can assume a normal distribution of F<sub>ST</sub> for each HMM state. Missing values ("NA") are discarded and very low F<sub>ST</sub> values that may result in "Inf" values after transformation or affect HMM fitting process are replaced by low, but tractable F<sub>ST</sub> values (i.e. 1e-5) beforehand. We also store the number of SNPs, the mean and the standard deviation of logit F<sub>ST</sub>s, as these values will be used later.
+F<sub>ST</sub> is transformed using a logit function so that we can assume a normal distribution of F<sub>ST</sub> for each HMM state. Missing values ("NA") are discarded and very low F<sub>ST</sub> values that may result in "Inf" values after transformation or affect HMM fitting process are replaced by low, but tractable F<sub>ST</sub> values (i.e. 1e-4) beforehand. We also store the number of SNPs, the mean and the standard deviation of logit F<sub>ST</sub>s, as these values will be used later.
 ```R
 # Remove missing data
 fst<-fst[!is.na(fst)]
 
 # Replace too low Fst values by tractable value
-fst[fst<1e-5]<-1e-5
+fst[fst<1e-4]<-1e-4
 
 # logit transform Fst, we will assume a normal logit distribution 
 # for each HMM state
